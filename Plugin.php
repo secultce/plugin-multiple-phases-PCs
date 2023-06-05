@@ -2,7 +2,9 @@
 namespace PrestacaoDeContas;
 
 use MapasCulturais\App;
+use MapasCulturais\Controllers\Opportunity;
 use MapasCulturais\Definitions;
+use MapasCulturais\Entities\OpportunityMeta;
 
 use function MapasCulturais\Controllers\dump;
 
@@ -14,6 +16,8 @@ class Plugin extends \MapasCulturais\Plugin
         $app->hook('template(opportunity.<<single|edit>>.tab-about--highlighted-message):end', function () use ($app) {
 
             $valueIsLastPhase = 0;
+            $valueCount = 0;
+
         
             if (!is_null($this->data['entity']->parent)) {
                 if (($this->data['entity']->parent->id)) {
@@ -28,8 +32,16 @@ class Plugin extends \MapasCulturais\Plugin
                             $valueIsLastPhase = $itensOpp->value;
                         }
                     }
+
+                    //pegar valor do count
+                    foreach ($parent as $itensOpp) {
+                        if ($itensOpp->key == 'count_total_pc') {
+                             $valueCount = $itensOpp->value;
+                        }
+                    }
                 }
             } // fim if PAI
+        
             $app->view->part('widget-opportunity-phases2', ['valueIsLastPhase' => $valueIsLastPhase]);
         });
 
@@ -37,7 +49,8 @@ class Plugin extends \MapasCulturais\Plugin
             $countIsPhases = 0;
             $count_total_pc = 0;
             $parentId = null;
-
+            $oldValue = false;
+          /*   $count_Antigo =  $count_total_pc; */
             if (!is_null($this->data['entity']->parent)) {
 
                 if (($this->data['entity']->parent->id)) {
@@ -83,52 +96,90 @@ class Plugin extends \MapasCulturais\Plugin
                             }
                         }
                     }
-                  
-                }
 
+                    //Verifica se já existe o campo que indica a quantidade de fases para que possa ser atualizada
+                    foreach ($idsFilhos as $key => $valChild) {
+                        $parent = $app->repo('OpportunityMeta')->findBy([
+                            'owner' => $this->data['entity']->parent->id,
+                        ]);
+
+                        foreach ($parent as $itensOpp) {
+                            if ($itensOpp->key == 'oldValue') {
+                                $oldValue = true;
+                            }
+                        }
+                    }
+                }
             }
 
-            if ($countIsPhases <= $count_total_pc) {
-                $entity = $app->view->controller->requestedEntity;
+
+            $entity = $app->view->controller->requestedEntity;
+            $app->view->part('widget-accountability-phases', ['entity' => $entity]);
+
+             if ($countIsPhases < $count_total_pc) {
+                /*  $entity = $app->view->controller->requestedEntity; */
             
-                //pegar id do pai
+                 //pegar id do pai
                 if (!is_null($this->data['entity']->parent)) {
-                    $parentId = $this->data['entity']->parent->id;
+                     $parentId = $this->data['entity']->parent->id;
+                 }
+
+                 $phase_up = $app->repo('OpportunityMeta')->findOneBy(['owner' => $parentId, 'key' => 'isLastPhase']);
+                 if ($phase_up) {
+                     $phase_up->setValue(0);
+                     $app->em->persist($phase_up);
+                     $app->em->flush();
                 }
-
-                $phase_up = $app->repo('OpportunityMeta')->findOneBy(['owner' => $parentId, 'key' => 'isLastPhase']);
-                if ($phase_up) {
-                    $phase_up->setValue(0);
-                    $app->em->persist($phase_up);
-                    $app->em->flush();
-                }
-
-               /*  if ($countIsPhases == $count_total_pc) {
-                  echo("Passei aqui");
-                  $phase_up->setValue(1);
-                  $app->em->persist($phase_up);
-                  $app->em->flush();
-               } */
-
-                $app->view->part('widget-accountability-phases', ['entity' => $entity]);
-
             }
+            
+             //adicionando novos metadados no banco ($countIsPhases)
+             //Só deve ser executada uma unica vez
+             //depois só atualiza os valores
+            /*  if (!is_null($this->data['entity']->parent)) {
+                $parentId = $this->data['entity']->parent->id;
+
+                $op = $app->repo('Opportunity')->find($parentId);
+                $new = new OpportunityMeta;
+                $new->key = 'countIsPhases';
+                $new->value = $countIsPhases;
+                $new->owner = $op;
+                $app->em->persist($new);
+                $app->em->flush();
+            
+            } */
+        
+            //pegar valor atualizado do novo Count_total_pc
+            //para permitir atualizar o numero de fases.
+
+            //se count for atualizado, verifica se valor é countAntigo>countAnterior e atualiza o islastphase = 0;
+           /*  $countUp = $app->repo('OpportunityMeta')->findOneBy(['owner' => $parentId, 'key' => 'count_total_pc']);
+            if($count_Antigo < $count_total_pc){
+                $countUp->setValue(0);
+                $app->em->persist($countUp);
+                $app->em->flush();
+            } */
+
         });
     }
+    
 
 
     public function register()
     {
         $app = App::i();
-        
-
         $conf =
             [
-            'label' => \MapasCulturais\i::__('Modelo de selo'), //alterar
+            'label' => \MapasCulturais\i::__('Quantidade de fases de prestações de conta'), //alterar
             'type' => 'select',
+
+            //torna obrigatorio preencher campo
+            'validations' => array(
+                'required' => \MapasCulturais\i::__('Indique a quantidade de fases'),
+            ),
+            
             'options' =>
             [
-                '' => \MapasCulturais\i::__("Selecione o número de fases"), //alterar
+                2 => \MapasCulturais\i::__(2), //alterar
                 1 => 1,
                 2 => 2,
                 3 => 3,
