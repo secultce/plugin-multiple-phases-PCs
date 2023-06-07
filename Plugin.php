@@ -11,6 +11,8 @@ use function MapasCulturais\Controllers\dump;
 
 class Plugin extends \MapasCulturais\Plugin
 {
+
+  
    public function _init()
    {
       $app = App::i();
@@ -116,10 +118,17 @@ class Plugin extends \MapasCulturais\Plugin
          }
 
          $entity = $app->view->controller->requestedEntity;
+         $app->view->enqueueScript('app', 'prestacaodecontas', 'js/prestacaodecontas/prestacaodecontas.js');
          $app->view->part('widget-accountability-phases', ['entity' => $entity]);
 
          self::upLastPhase($app, $countIsPhases, $count_total_pc, $this->data['entity']->parent);
       });
+
+      $app->hook('POST(prestacaodecontas.total)', function() use($app){
+
+      });
+
+
    }
 
    /**
@@ -161,6 +170,7 @@ class Plugin extends \MapasCulturais\Plugin
             'validations' => array(
                'required' => \MapasCulturais\i::__('Indique a quantidade de fases'),
             ),
+            'id'=> 'selectCountPcback',
             'options' =>
             [
                2 => \MapasCulturais\i::__(2), //alterar
@@ -174,5 +184,7 @@ class Plugin extends \MapasCulturais\Plugin
 
       $def_opp = new Definitions\Metadata('count_total_pc', $conf);
       $app->registerMetadata($def_opp, 'MapasCulturais\Entities\Opportunity');
+
+      $app->registerController('prestacaodecontas', Controllers\PrestacaoDeContasController::class);
    }
 }
