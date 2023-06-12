@@ -1,6 +1,7 @@
 $(document).ready(function () {
 
    console.log('Prestacao de contas jquery');
+   $("#selectCountPC").hide();
 
     $("#select_total_count").change(function (e) { 
         e.preventDefault();
@@ -18,7 +19,7 @@ $(document).ready(function () {
                     MapasCulturais.Messages.success('Total de Mensagem: ' + response.message);
                 }
 
-                MapasCulturais.Messages.error('seu bandido');
+                MapasCulturais.Messages.error(response.message);
             }
         });
     });

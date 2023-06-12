@@ -42,19 +42,24 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
             'owner' => $entity->id,
          ]);
         $countChild = 0;
+        $count_total_pc = 0;
         foreach ($parent as $childrenValue) {
             if ($childrenValue->key == 'count_total_pc') {
                 $countChild = $childrenValue->value;
             }
+            if ($childrenValue->key == 'count_total_pc') {
+                $count_total_pc = $childrenValue->value;
+             }
+        }
+        if($count_total_pc > $this->data['count_total_pc']){
+            $this->json(['message' => 'Valor não deve ser superior ao valor anteriormente escolhido', 'status' => 400]);
         }
         // dump($countChild, $total);
             //  dump($parent);
 
-
-
         //  dump($parent);
         // die;
-        $this->json(['message' => $total, 'status' => 400]);
+        $this->json(['message' => $total, 'status' => 200]);
         // $parent = $app->repo('OpportunityMeta')->findBy([
         //     'owner' => $this->data['entidade'],
         //  ]);
