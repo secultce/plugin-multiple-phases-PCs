@@ -11,67 +11,76 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
     }
 
     function POST_total () {
-        // dump($this->data);
+        $totalChild = self::totalCountChildren($this->data['entidade']);
+        /**
+         * Se o total do banco é igual ao total de filhos, só poderá add mais PC
+         */
+        if($totalChild['count_total_pc'] == $totalChild['countChild'] && $this->data['valor_escolhido'] > $totalChild['countChild']){
+           //validado para o usuario
+           $this->json(['message' => 'Pode alterar', 'status' => 200]);
+        }elseif($totalChild['count_total_pc'] == $totalChild['countChild'] && $this->data['valor_escolhido'] < $totalChild['countChild']){
+            //Mensagem de erro
+            $this->json(['message' => 'Não poderá alterar', 'status' => 400]);
+        }elseif($totalChild['count_total_pc'] > $totalChild['countChild'] && $this->data['valor_escolhido'] > $totalChild['countChild'])
+        {
+            $this->json(['message' => 'Outra condicao', 'status' => 400]);
+        }
+    }
+    /**
+     * Faz uma verificação de total de filhos de uma op. e o total que foi conf. no banco
+     *
+     * @param [integer] $idEntity
+     * @return array
+     */
+    public function totalCountChildren($idEntity)
+    {
         $app = App::i();
-
         //BUSCANDO INSTANCIA REQUISITADA
-        $entity = $app->repo('Opportunity')->find($this->data['entidade']);
-        $total = 0;
+        $entity = $app->repo('Opportunity')->find($idEntity);
+        //para registrar o total de filhos
+        
         //se o parent nao for null é por que é uma instancia PAI
+        $totalChild = self::totalChildren($entity, $app);
+
+        $parent = $app->repo('OpportunityMeta')->findBy([
+            'owner' => $entity->id,
+         ]);
+
+        $count_total_pc = 0;// total que está registrado no banco
+        foreach ($parent as $childrenValue) {
+            
+            if ($childrenValue->key == 'count_total_pc') {
+                $count_total_pc = $childrenValue->value;
+             }
+        }
+
+        return ['countChild' => $totalChild, 'count_total_pc' => $count_total_pc];
+    }
+
+    /**
+     * Função exclusica para contagem dos filhos
+     * @param [object] $entity
+     * @param [object] $app
+     * @return int
+    */
+    public function totalChildren($entity, $app)
+    {
+        $totalChild = 0;
         if (is_null($entity->parent)) {
            
             $child = $app->repo('Opportunity')->findBy([
                 'parent' => $entity->id,
              ]);
-
-            //  dump(count($child));
-            $total = count($child);
+            $totalChild = count($child);
         }else{
-            //É UM FILHO           
+            //É UM FILHO
             $child = $app->repo('Opportunity')->findBy([
                 'parent' => $entity->parent->id,
-             ]);
+            ]);
 
-            //  dump(count($child));
-             $total = count($child);
+            $totalChild = count($child);
         }
-        // dump($entity->id);
-        // die;
-
-        $parent = $app->repo('OpportunityMeta')->findBy([
-            'owner' => $entity->id,
-         ]);
-        $countChild = 0;
-        $count_total_pc = 0;
-        foreach ($parent as $childrenValue) {
-            if ($childrenValue->key == 'count_total_pc') {
-                $countChild = $childrenValue->value;
-            }
-            if ($childrenValue->key == 'count_total_pc') {
-                $count_total_pc = $childrenValue->value;
-             }
-        }
-        if($count_total_pc > $this->data['count_total_pc']){
-            $this->json(['message' => 'Valor não deve ser superior ao valor anteriormente escolhido', 'status' => 400]);
-        }
-        // dump($countChild, $total);
-            //  dump($parent);
-
-        //  dump($parent);
-        // die;
-        $this->json(['message' => $total, 'status' => 200]);
-        // $parent = $app->repo('OpportunityMeta')->findBy([
-        //     'owner' => $this->data['entidade'],
-        //  ]);
-
-         //se tem filhos
-        //  $child = $app->repo('Opportunity')->findBy([
-        //     'parent' => $parent[0],
-        //  ]);
-        //  dump(count($child));
-        //  dump(count($parent));
-    //    $this->json(['message' => 1]);
-
+        return $totalChild;
     }
 }
 

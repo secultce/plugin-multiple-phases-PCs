@@ -6,6 +6,7 @@
 //     'js/prestacaodecontas/ng.module.prestacaodecontas.js', // arquivo do script
 //     [] // dependências do script
 // );
+
 ?>
 
 <div id="widget-select-pc">
@@ -36,12 +37,5 @@
             </div>
         </div>
     </label>
-
- <div>
- <h1>Lista de itens</h1>
-  <ul>
-    <li id="item_um_pc">Item - <a>remover</a></li>
-  </ul>
- </div>
 </div>
 

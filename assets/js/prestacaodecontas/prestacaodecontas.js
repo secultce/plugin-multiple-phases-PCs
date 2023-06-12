@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
    console.log('Prestacao de contas jquery');
-   $("#selectCountPC").hide();
+//    $("#selectCountPC").hide();
 
     $("#select_total_count").change(function (e) { 
         e.preventDefault();
@@ -16,7 +16,7 @@ $(document).ready(function () {
                 
                 if(response.status == 200)
                 {
-                    MapasCulturais.Messages.success('Total de Mensagem: ' + response.message);
+                    MapasCulturais.Messages.success(response.message);
                 }
 
                 MapasCulturais.Messages.error(response.message);
@@ -26,11 +26,11 @@ $(document).ready(function () {
 
 
     
-    var parent = 0;
-    var parent = MapasCulturais.entity.object.parent.id;
-    console.log({parent});
-    if(parent > 0){
-        $("#widget-select-pc").hide();
-    }
+    // var parent = 0;
+    // var parent = MapasCulturais.entity.object.parent.id;
+    // console.log({parent});
+    // if(parent > 0){
+    //     $("#widget-select-pc").hide();
+    // }
 
 });
