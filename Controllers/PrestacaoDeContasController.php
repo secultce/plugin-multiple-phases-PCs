@@ -12,20 +12,53 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
 
     function POST_total () {
         $totalChild = self::totalCountChildren($this->data['entidade']);
+        dump($totalChild);
+        //BLOCO DE CONDIÇÕES
         /**
          * Se o total do banco é igual ao total de filhos, só poderá add mais PC
          */
         if($totalChild['count_total_pc'] == $totalChild['countChild'] && $this->data['valor_escolhido'] > $totalChild['countChild']){
            //validado para o usuario
-           $this->json(['message' => 'Pode alterar', 'status' => 200]);
+           $this->json(['message' => 'Salve sua alteração para mudar a configuração', 'status' => 200]);
+           
         }elseif($totalChild['count_total_pc'] == $totalChild['countChild'] && $this->data['valor_escolhido'] < $totalChild['countChild']){
             //Mensagem de erro
-            $this->json(['message' => 'Não poderá alterar', 'status' => 400]);
+            $this->json(['message' => 'Não é possível alterar para esse número de fases de Prestação de conta', 'status' => 400]);
+
         }elseif($totalChild['count_total_pc'] > $totalChild['countChild'] && $this->data['valor_escolhido'] > $totalChild['countChild'])
         {
-            $this->json(['message' => 'Outra condicao', 'status' => 400]);
+            $this->json(['message' => 'Salve sua alteração para mudar a configuração', 'status' => 200]);
+
+        }elseif($totalChild['count_total_pc'] > $totalChild['countChild'] && $this->data['valor_escolhido'] == $totalChild['countChild'])
+        {
+            $this->json(['message' => 'Salve sua alteração para mudar a configuração', 'status' => 200]);
+        }
+        elseif($totalChild['count_total_pc'] > $totalChild['countChild'] && $this->data['valor_escolhido'] > $totalChild['countChild'])
+        {
+            $this->json(['message' => 'Não é possível alterar para esse número de fases de Prestação de conta', 'status' => 400]);
+        }
+        elseif($totalChild['count_total_pc'] > $totalChild['countChild'] && $this->data['valor_escolhido'] < $totalChild['countChild'])
+        {
+            $this->json(['message' => 'Não é possível alterar para esse número de fases de Prestação de conta', 'status' => 400]);
+        }
+        elseif($totalChild['count_total_pc'] == $totalChild['countChild'] && $this->data['valor_escolhido'] == $totalChild['countChild'])
+        {
+            $this->json(['message' => 'Não é possível alterar para esse número de fases de Prestação de conta', 'status' => 400]);
         }
     }
+
+    /**
+     * Retorna o número gravado no banco de prestação de contas
+     *
+     */
+    function GET_gettotpc()
+    {
+        $app = App::i();
+        $entity = $app->repo('Opportunity')->find($this->data['entity']);
+        $total = self::totalCountPC($app, $entity);
+        $this->json(['message' => $total]);
+    }
+
     /**
      * Faz uma verificação de total de filhos de uma op. e o total que foi conf. no banco
      *
@@ -41,18 +74,8 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
         
         //se o parent nao for null é por que é uma instancia PAI
         $totalChild = self::totalChildren($entity, $app);
-
-        $parent = $app->repo('OpportunityMeta')->findBy([
-            'owner' => $entity->id,
-         ]);
-
-        $count_total_pc = 0;// total que está registrado no banco
-        foreach ($parent as $childrenValue) {
-            
-            if ($childrenValue->key == 'count_total_pc') {
-                $count_total_pc = $childrenValue->value;
-             }
-        }
+        //TOTAL DE PC
+        $count_total_pc = self::totalCountPC($app, $entity);
 
         return ['countChild' => $totalChild, 'count_total_pc' => $count_total_pc];
     }
@@ -81,6 +104,23 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
             $totalChild = count($child);
         }
         return $totalChild;
+    }
+
+    public function totalCountPC($app, $entity)
+    {
+        $parent = $app->repo('OpportunityMeta')->findBy([
+            'owner' => $entity->id,
+         ]);
+
+        $count_total_pc = 0;// total que está registrado no banco
+        foreach ($parent as $childrenValue) {
+            
+            if ($childrenValue->key == 'count_total_pc') {
+                $count_total_pc = $childrenValue->value;
+             }
+        }
+
+        return  $count_total_pc;
     }
 }
 

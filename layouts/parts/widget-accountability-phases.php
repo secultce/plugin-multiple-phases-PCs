@@ -1,13 +1,5 @@
-<?php
 
-// $this->enqueueScript(
-//     'app', // grupo de scripts
-//     'ng-module-prestacaodecontas',  // nome do script
-//     'js/prestacaodecontas/ng.module.prestacaodecontas.js', // arquivo do script
-//     [] // dependências do script
-// );
-
-?>
+<?php use MapasCulturais\i;?>
 
 <div id="widget-select-pc">
     <label >
@@ -21,15 +13,14 @@
                     <?php echo $entity->count_total_pc; ?>
                 </span>
                 <select name="select_total_count" id="select_total_count">
-                    <option value="01">01</option>
-                    <option value="02">02</option>
-                    <option value="03">03</option>
-                    <option value="03">04</option>
-                    <option value="03">05</option>
+                    <option value="1">01</option>
+                    <option value="2">02</option>
+                    <option value="3">03</option>
+                    <option value="4">04</option>
+                    <option value="5">05</option>
                 </select>
             </p>
 
-            <?php use MapasCulturais\i;?>
             <div class="opportunity-phases clear">
                 <a class="btn btn-default add" ng-click="editbox.open('id-da-caixa', $event)"  rel='noopener noreferrer'>
                     <?php i::_e("ADICIONAR NOVAS PRESTAÇÕES DE CONTAS");?>

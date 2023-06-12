@@ -3,16 +3,10 @@
 namespace PrestacaoDeContas;
 
 use MapasCulturais\App;
-use MapasCulturais\Controllers\Opportunity;
 use MapasCulturais\Definitions;
-use MapasCulturais\Entities\OpportunityMeta;
-
-use function MapasCulturais\Controllers\dump;
 
 class Plugin extends \MapasCulturais\Plugin
 {
-
-  
    public function _init()
    {
       $app = App::i();
@@ -101,19 +95,6 @@ class Plugin extends \MapasCulturais\Plugin
                      }
                   }
                }
-
-               //Verifica se já existe o campo que indica a quantidade de fases para que possa ser atualizada
-               //   foreach ($idsFilhos as $key => $valChild) {
-               //       $parent = $app->repo('OpportunityMeta')->findBy([
-               //           'owner' => $this->data['entity']->parent->id,
-               //       ]);
-
-               //       foreach ($parent as $itensOpp) {
-               //           if ($itensOpp->key == 'oldValue') {
-               //               $oldValue = true;
-               //           }
-               //       }
-               //   }
             }
          }
 
@@ -123,11 +104,6 @@ class Plugin extends \MapasCulturais\Plugin
 
          self::upLastPhase($app, $countIsPhases, $count_total_pc, $this->data['entity']->parent);
       });
-
-      $app->hook('POST(prestacaodecontas.total)', function() use($app){
-
-      });
-
 
    }
 
