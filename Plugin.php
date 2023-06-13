@@ -105,7 +105,61 @@ class Plugin extends \MapasCulturais\Plugin
          self::upLastPhase($app, $countIsPhases, $count_total_pc, $this->data['entity']->parent);
       });
 
+
+      $app->hook("entity(Opportunity).update:after", function () use ($app) {
+         // dump($this->id);
+         $entity = $this;
+         $com = self::comparacao($entity, $app);
+         dump($com);
+         // dump($countIsPhases);
+         die;
+
+      });
+
+
+
    }
+
+   static function comparacao($entity, $app)
+   {
+      
+      $parent = $app->repo('OpportunityMeta')->findBy([
+         'owner' => $entity->id,
+      ]);
+      // dump($parent);
+      $count_total_pc = 0;
+      foreach ($parent as $itensOpp) {
+         if ($itensOpp->key == 'count_total_pc') {
+            $count_total_pc = $itensOpp->value;
+         }
+      }
+      $countIsPhases = 0;
+      dump($count_total_pc);
+      $idsFilhos = [];
+      $opp = $app->repo('Opportunity')->findBy([
+         'parent' => $entity->id,
+      ]);
+      foreach ($opp as $key => $value) {
+         array_push($idsFilhos, $value->id);
+      }
+      foreach ($idsFilhos as $key => $valChild) {
+         // dump($valChild);
+         $child = $app->repo('OpportunityMeta')->findBy([
+            'owner' => $valChild,
+         ]);
+
+         foreach ($child as $ChildrenValue) {
+            if ($ChildrenValue->key == 'isOpportunityPhase') {
+               $countIsPhases++;
+            }
+         }
+      }
+
+      return $countIsPhases;
+
+
+   }
+
 
    /**
     * Altera o valor do isLastPhase para criação de uma nova fase
