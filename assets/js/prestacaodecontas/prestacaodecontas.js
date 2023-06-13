@@ -1,13 +1,13 @@
 $(document).ready(function () {
    //Iniciando como x-editable
-   $("#selectCountPC").editable().hide()
+   $(".selectCountPC").editable().hide()
    //Oculta o select para não ser mostrado enquanto a página está carregando
    $("#select_total_count").hide();
     //quando o campo do select é alterado
     $("#select_total_count").change(function (e) { 
         e.preventDefault();
         //INSTANCIA DO X-EDITABLE
-        var selectCountPC = $("#selectCountPC").editable();
+        var selectCountPC = $(".selectCountPC").editable();
         //REALIZANDO A REQUISIÇÃO PARA BACKEND
         $.ajax({
             type: "post",
@@ -26,6 +26,9 @@ $(document).ready(function () {
                 }
             }
         });
+        var selectCountPC = $(".selectCountPC").editable();
+        //REALIZANDO A REQUISIÇÃO PARA BACKEND
+       
     });
     //PARA AS OPORTUNIDADES QUE SÃO FILHAS
     var parent = getIdEntity();

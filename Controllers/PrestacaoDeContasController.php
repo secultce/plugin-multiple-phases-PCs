@@ -12,7 +12,10 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
 
     function POST_total () {
         $totalChild = self::totalCountChildren($this->data['entidade']);
-        dump($totalChild);
+
+        self::updateLastPhase($this->data['entidade']);
+
+
         //BLOCO DE CONDIÇÕES
         /**
          * Se o total do banco é igual ao total de filhos, só poderá add mais PC
@@ -58,6 +61,26 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
         $total = self::totalCountPC($app, $entity);
         $this->json(['message' => $total]);
     }
+
+
+    function updateLastPhase($entityId) {
+        $this->requireAuthentication();
+        $app = App::i();
+        
+        // Verificar se o campo isLastPhase precisa ser atualizado para 0
+        $opportunityMeta = $app->repo('OpportunityMeta')->findOneBy([
+            'owner' => $entityId,
+            'key' => 'isLastPhase'
+        ]);
+    
+        if ($opportunityMeta) {
+            $opportunityMeta->setValue(0);
+            $app->em->persist($opportunityMeta);
+            $app->em->flush();
+        }
+    }
+
+
 
     /**
      * Faz uma verificação de total de filhos de uma op. e o total que foi conf. no banco
