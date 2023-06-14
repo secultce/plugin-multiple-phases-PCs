@@ -13,9 +13,6 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
     function POST_total () {
         $totalChild = self::totalCountChildren($this->data['entidade']);
 
-        self::updateLastPhase($this->data['entidade']);
-
-
         //BLOCO DE CONDIÇÕES
         /**
          * Se o total do banco é igual ao total de filhos, só poderá add mais PC
@@ -50,6 +47,25 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
         }
     }
 
+    //   Muda o isLastPhase para 1, caso o quantidade de filhos seja igual a quantidade de prestações registradas   
+    public function GET_getCountPc()
+    {
+        $app = App::i();
+        $info = $this->totalCountChildren($this->data['entidade']);
+        $idEntity = $this->data['entidade'];
+        
+        if ($info['countChild'] == $info['count_total_pc']) {            
+
+            $phase_up = $app->repo('OpportunityMeta')->findOneBy(['owner' => $idEntity, 'key' => 'isLastPhase']);
+            dump($phase_up);
+            if ($phase_up) {
+                $phase_up->setValue(1);
+                $app->em->persist($phase_up);
+                $app->em->flush();
+            }
+        }
+    }
+
     /**
      * Retorna o número gravado no banco de prestação de contas
      *
@@ -61,26 +77,6 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
         $total = self::totalCountPC($app, $entity);
         $this->json(['message' => $total]);
     }
-
-
-    function updateLastPhase($entityId) {
-        $this->requireAuthentication();
-        $app = App::i();
-        
-        // Verificar se o campo isLastPhase precisa ser atualizado para 0
-        $opportunityMeta = $app->repo('OpportunityMeta')->findOneBy([
-            'owner' => $entityId,
-            'key' => 'isLastPhase'
-        ]);
-    
-        if ($opportunityMeta) {
-            $opportunityMeta->setValue(0);
-            $app->em->persist($opportunityMeta);
-            $app->em->flush();
-        }
-    }
-
-
 
     /**
      * Faz uma verificação de total de filhos de uma op. e o total que foi conf. no banco

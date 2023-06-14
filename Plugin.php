@@ -110,19 +110,13 @@ class Plugin extends \MapasCulturais\Plugin
          // dump($this->id);
          $entity = $this;
          $com = self::comparacao($entity, $app);
-         dump($com);
-         // dump($countIsPhases);
-         die;
-
+         
       });
-
-
 
    }
 
    static function comparacao($entity, $app)
-   {
-      
+   {      
       $parent = $app->repo('OpportunityMeta')->findBy([
          'owner' => $entity->id,
       ]);
@@ -156,10 +150,7 @@ class Plugin extends \MapasCulturais\Plugin
       }
 
       return $countIsPhases;
-
-
    }
-
 
    /**
     * Altera o valor do isLastPhase para criação de uma nova fase

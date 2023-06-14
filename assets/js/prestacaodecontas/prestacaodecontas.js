@@ -1,13 +1,13 @@
 $(document).ready(function () {
    //Iniciando como x-editable
-   $(".selectCountPC").editable().hide()
+   $("#selectCountPC").editable().hide()
    //Oculta o select para não ser mostrado enquanto a página está carregando
    $("#select_total_count").hide();
     //quando o campo do select é alterado
     $("#select_total_count").change(function (e) { 
         e.preventDefault();
         //INSTANCIA DO X-EDITABLE
-        var selectCountPC = $(".selectCountPC").editable();
+        var selectCountPC = $("#selectCountPC").editable();
         //REALIZANDO A REQUISIÇÃO PARA BACKEND
         $.ajax({
             type: "post",
@@ -26,7 +26,7 @@ $(document).ready(function () {
                 }
             }
         });
-        var selectCountPC = $(".selectCountPC").editable();
+        var selectCountPC = $("#selectCountPC").editable();
         //REALIZANDO A REQUISIÇÃO PARA BACKEND
        
     });
@@ -37,7 +37,30 @@ $(document).ready(function () {
     }
     //BUSCA O TOTAL DE PRESTAÇÃO DE CONTAS QUE ESTÁ NO BANCO
     getTotalPc();
+
+    //Quando o select for mudado e tirado seu foco
+    $("#select_total_count").blur(function (e) {
+        val_count_pc = $("#select_total_count").val();
+        var testeData =  {
+            valueSelect : val_count_pc, entidade: MapasCulturais.entity.id
+        };
+        getNumber(testeData)
+    })
 });
+
+//Função usada na controller para mudança do isLastPhase
+function getNumber(tData)
+{
+    $.ajax({
+        type: "GET",
+        url: MapasCulturais.baseURL + "prestacaodecontas/getCountPc/",
+        data: tData,
+        dataType: "json",
+        success: function (response) {
+            console.log({response})
+        }
+    });
+}
 
 //BUSCA O TOTAL DE PRESTAÇÃO DE CONTAS QUE ESTÁ NO BANCO
 function getTotalPc()
