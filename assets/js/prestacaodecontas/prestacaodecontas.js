@@ -53,8 +53,9 @@ function getNumber(tData)
 {
     $.ajax({
         type: "GET",
-        url: MapasCulturais.baseURL + "prestacaodecontas/getCountPc/",
-        data: tData,
+        url: MapasCulturais.baseURL + "prestacaodecontas/changeNumber/",
+        data: {valor_escolhido : e.target.value, entidade : MapasCulturais.entity.id},
+        data: {tData,},
         dataType: "json",
         success: function (response) {
             console.log({response})
