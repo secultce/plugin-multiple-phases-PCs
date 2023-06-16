@@ -64,6 +64,7 @@ function getNumber(tData)
 }
 
 //BUSCA O TOTAL DE PRESTAÇÃO DE CONTAS QUE ESTÁ NO BANCO
+//E SETA O VALOR COMO PADRÃO DENTRO DO SELECT
 function getTotalPc()
 {
     var idEntity = MapasCulturais.entity.id;

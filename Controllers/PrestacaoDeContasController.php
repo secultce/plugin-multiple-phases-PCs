@@ -11,6 +11,7 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
     }
 
     function POST_total () {
+        $this->requireAuthentication();
         $totalChild = self::totalCountChildren($this->data['entidade']);
 
         //BLOCO DE CONDIÇÕES
@@ -51,6 +52,7 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
     public function GET_getCountPc()
     {
         $app = App::i();
+        $this->requireAuthentication();
         $info = $this->totalCountChildren($this->data['entidade']);
         $idEntity = $this->data['entidade'];
         
@@ -73,6 +75,7 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
     function GET_gettotpc()
     {
         $app = App::i();
+        $this->requireAuthentication();
         $entity = $app->repo('Opportunity')->find($this->data['entity']);
         $total = self::totalCountPC($app, $entity);
         $this->json(['message' => $total]);
@@ -87,6 +90,7 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
     public function totalCountChildren($idEntity)
     {
         $app = App::i();
+        $this->requireAuthentication();
         //BUSCANDO INSTANCIA REQUISITADA
         $entity = $app->repo('Opportunity')->find($idEntity);
         //para registrar o total de filhos
@@ -127,6 +131,7 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
 
     public function totalCountPC($app, $entity)
     {
+        $this->requireAuthentication();
         $parent = $app->repo('OpportunityMeta')->findBy([
             'owner' => $entity->id,
          ]);
