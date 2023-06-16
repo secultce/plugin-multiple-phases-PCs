@@ -13,20 +13,13 @@ class Plugin extends \MapasCulturais\Plugin
       $app = App::i();
       //Edição da Oportunidade
       $app->hook('template(opportunity.edit.tab-about):begin', function () use ($app, &$valueIsLastPhase) {
-         $countIsPhases = 0; //Total de Oportunidades que são PC
+         $countIsPhases = 0; //Total de Fases que são PC
          $count_total_pc = 0; // total registrado na configuração da oportunidade
 
          /*   $count_Antigo =  $count_total_pc; */
          if (!is_null($this->data['entity']->parent)) {
 
             if (($this->data['entity']->parent->id)) {
-               /**
-                * Explicar o porque dessa consulta
-                */
-               //   $parent = $app->repo('OpportunityMeta')->findBy([
-               //       'owner' => $this->data['entity']->parent->id,
-               //   ]);
-
                //Quantidade de prestações de conta
                $idsFilhos = [];
                $opp = $app->repo('Opportunity')->findBy([
@@ -71,7 +64,12 @@ class Plugin extends \MapasCulturais\Plugin
          $app->view->enqueueScript('app', 'prestacaodecontas', 'js/prestacaodecontas/prestacaodecontas.js');
          $app->view->part('widget-accountability-phases', ['entity' => $entity]);
 
-         self::upLastPhase($app, $countIsPhases, $count_total_pc, $this->data['entity']->parent, 0);
+         //ALTERA O ISLASTPHASES SE O TOTAL DE OP. DE PC FOR MENOR QUE O TOTAL CONFIGURAÇÃO NO BANCO
+         if ($countIsPhases < $count_total_pc)
+         {
+            self::upLastPhase($app, $this->data['entity']->parent, 0);
+         }
+
       });
 
       //HOOK para realizar alteração apos o salvar
@@ -113,20 +111,17 @@ class Plugin extends \MapasCulturais\Plugin
     * @param [integer] $valueUpdate
     * @return void
     */
-   protected static function upLastPhase($app, $countIsPhases = null, $count_total_pc, $parent, $valueUpdate)
+   protected static function upLastPhase($app, $parent, $valueUpdate)
    {
-
-      if ($countIsPhases < $count_total_pc) {
-         //pegar id do pai
-         if (!is_null($parent)) {
-            $phase_up = $app->repo('OpportunityMeta')->findOneBy(['owner' => $parent->id, 'key' => 'isLastPhase']);
-            if ($phase_up) {
-               $phase_up->setValue($valueUpdate);
-               $app->em->persist($phase_up);
-               $app->em->flush();
-            }
+      //pegar id do pai
+      if (!is_null($parent)) {
+         $phase_up = $app->repo('OpportunityMeta')->findOneBy(['owner' => $parent->id, 'key' => 'isLastPhase']);
+         if ($phase_up) {
+            $phase_up->setValue($valueUpdate);
+            $app->em->persist($phase_up);
+            $app->em->flush();
          }
-      }
+      }      
    }
 
    public function register()
