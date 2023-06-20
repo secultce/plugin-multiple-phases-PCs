@@ -20,16 +20,19 @@
                     <option value="5">05</option>
                 </select>
             </p>
-            <div class="opportunity-phases clear">
-                <a 
-                class="btn btn-primary add"
-                title="Click para adicionar uma nova fase de prestação de contas"
-                ng-click="editbox.open('btn-new-pc', $event)"  rel='noopener noreferrer'>
-                    <?php i::_e("ADICIONAR NOVAS PRESTAÇÕES DE CONTAS");?>
-                </a>
-            </div>
         </div>
     </label>
+</div>
+
+
+<div>
+    <div class = "registration-fieldset">
+        <div class="opportunity-phases clear">
+            <a class="btn btn-primary add" title="Click para adicionar uma nova fase de prestação de contas" ng-click="editbox.open('btn-new-pc', $event)"  rel='noopener noreferrer'>
+                <?php i::_e("ADICIONAR NOVAS PRESTAÇÕES DE CONTAS");?>
+            </a>
+        </div>
+    </div>
 </div>
 
 <div ng-controller="OpportunityPhasesController">

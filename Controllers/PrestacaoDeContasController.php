@@ -34,10 +34,6 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
         {
             $this->json(['message' => 'Salve sua alteração para mudar a configuração', 'status' => 200]);
         }
-        elseif($totalChild['count_total_pc'] > $totalChild['countChild'] && $this->data['valor_escolhido'] > $totalChild['countChild'])
-        {
-            $this->json(['message' => 'Não é possível alterar para esse número de fases de Prestação de conta', 'status' => 400]);
-        }
         elseif($totalChild['count_total_pc'] > $totalChild['countChild'] && $this->data['valor_escolhido'] < $totalChild['countChild'])
         {
             $this->json(['message' => 'Não é possível alterar para esse número de fases de Prestação de conta', 'status' => 400]);
