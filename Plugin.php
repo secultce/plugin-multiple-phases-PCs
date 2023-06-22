@@ -16,6 +16,7 @@ class Plugin extends \MapasCulturais\Plugin
         $countIsPhases = 0; //Total de Fases que são PC
 
             self::comparacao($this->data['entity'], $app);
+            $cont =  self::getChildren($this->data['entity'], $app);
 
             if (!is_null($this->data['entity']->parent)) {
                 if (($this->data['entity']->parent->id)) {
@@ -37,20 +38,16 @@ class Plugin extends \MapasCulturais\Plugin
                         ]);
 
                         foreach ($child as $ChildrenValue) {
-                        if ($ChildrenValue->key == 'isOpportunityPhase') {
-                            $countIsPhases++;
+                            if ($ChildrenValue->key == 'isOpportunityPhase') {
+                                $countIsPhases++;
+                            }
                         }
-                        }
+                        $cont = $countIsPhases;
                     }
                 }
             }
-
             $entity = $app->view->controller->requestedEntity;
-
-            if($countIsPhases < 5){
-                $app->view->part('widget-accountability-phases', ['entity' => $entity]);
-            }
-           
+            $app->view->part('widget-accountability-phases', ['entity' => $entity, 'cont' => $cont]);
             $app->view->enqueueScript('app', 'prestacaodecontas', 'js/prestacaodecontas/prestacaodecontas.js');
         });
 
@@ -83,6 +80,23 @@ class Plugin extends \MapasCulturais\Plugin
         }
     }
 
+    public static function getChildren($entity, $app)
+    {
+        $totalChild = 0;
+        if (is_null($entity->parent)) {
+            $opp = $app->repo('Opportunity')->findBy([
+                'parent' => $entity->id,
+            ]);
+            $totalChild = count($opp);
+        }else{
+            $child = $app->repo('Opportunity')->findBy([
+                'parent' => $entity->parent->id,
+            ]);
+            $totalChild = count($child);
+        }
+
+        return $totalChild;
+    }
     /**
      * Altera o valor do isLastPhase para 0 pu 1 dependendo da necessidade
      *
