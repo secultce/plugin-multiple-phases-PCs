@@ -1,6 +1,6 @@
 
 <?php use MapasCulturais\i;?>
-<?php if($owner == $visitor) : ?>
+<?php if($owner == $profile) : ?>
     <?php if($cont>0) : ?>
         <div id="widget-select-pc">
             <label >
