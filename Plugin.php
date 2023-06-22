@@ -6,6 +6,8 @@ use MapasCulturais\App;
 use MapasCulturais\Definitions;
 use MapasCulturais\Entities\OpportunityMeta;
 
+use function MapasCulturais\Controllers\dump;
+
 class Plugin extends \MapasCulturais\Plugin
 {
     public function _init()
@@ -47,7 +49,10 @@ class Plugin extends \MapasCulturais\Plugin
                 }
             }
             $entity = $app->view->controller->requestedEntity;
-            $app->view->part('widget-accountability-phases', ['entity' => $entity, 'cont' => $cont]);
+            $owner = $entity->owner->id;
+            $visitor = $app->user->profile->id;
+
+            $app->view->part('widget-accountability-phases', ['entity' => $entity, 'cont' => $cont,'owner'=>$owner, 'visitor'=>$visitor]);
             $app->view->enqueueScript('app', 'prestacaodecontas', 'js/prestacaodecontas/prestacaodecontas.js');
         });
 
