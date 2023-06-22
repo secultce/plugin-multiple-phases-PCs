@@ -13,6 +13,7 @@ class PrestacaoDeContasController extends \MapasCulturais\Controller {
     function POST_total () {
         $this->requireAuthentication();
         $totalChild = self::totalCountChildren($this->data['entidade']);
+        dump($totalChild);
 
         //BLOCO DE CONDIÇÕES
         /**
