@@ -51,8 +51,9 @@ class Plugin extends \MapasCulturais\Plugin
             $entity = $app->view->controller->requestedEntity;
             $owner = $entity->owner->id;
             $profile = $app->user->profile->id;
-
-            $app->view->part('widget-accountability-phases', ['entity' => $entity, 'cont' => $cont,'owner'=>$owner, 'profile'=>$profile]);
+            $sasAdmin =  $app->user->is('saasSuperAdmin');
+            
+            $app->view->part('widget-accountability-phases', ['entity' => $entity, 'cont' => $cont,'owner'=>$owner, 'profile'=>$profile, 'sasAdmin'=>$sasAdmin]);
             $app->view->enqueueScript('app', 'prestacaodecontas', 'js/prestacaodecontas/prestacaodecontas.js');
         });
 
